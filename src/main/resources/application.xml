@@ -26,8 +26,12 @@
     </bean>
 
     <!-- 配置Realm -->
-    <bean id="jdbcRealm" class="com.mm.shrio.realms.ShiroRealm">
-
+    <bean id="jdbcRealm" class="com.mm.shiro.realms.ShiroRealm">
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="MD5"></property>
+            </bean>
+        </property>
     </bean>
 
     <!-- =========================================================
@@ -74,8 +78,8 @@
             <value>
                 /index.jsp = anon
                 /login.jsp = anon
-                /shrio/login = anon
-                /shrio/logout = anon
+                /shiro/login = anon
+                /shiro/logout = logout
                 # everything else requires authentication:
                 /** = authc
             </value>
