@@ -1,11 +1,18 @@
 package com.mm.shiro.realms;
 
 import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthenticatingRealm;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 
-public class ShiroRealm extends AuthenticatingRealm {
+import java.util.HashSet;
+import java.util.Set;
+
+public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
@@ -46,5 +53,21 @@ public class ShiroRealm extends AuthenticatingRealm {
         int hashIterations = 1024;
         Object result = new SimpleHash(hashAlgorithmName, credentials, salt, hashIterations);
         System.out.println(result);
+    }
+
+    //授权会被shiro回调的方法
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        //获取用户登录的信息
+        Object principal = principals.getPrimaryPrincipal();
+        //获取角色或权限(可能需要查询数据库)
+        Set<String> roles = new HashSet<>();
+        roles.add("user");
+        if ("admin".equals(principal)) {
+            roles.add("admin");
+        }
+        //设置reles属性
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roles);
+        return info;
     }
 }
